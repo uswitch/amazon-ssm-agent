@@ -1,6 +1,14 @@
 pipeline:
+  build-base-image:
+    image: plugins/docker
+    when:
+      event: push
+    repo: registry.usw.co/cloud/amazon-ssm-agent-base
+    tags:
+      - ${DRONE_COMMIT_SHA}
+      - latest
   build:
-    image: golang:1.15
+    image: registry.usw.co/cloud/amazon-ssm-agent-base
     environment:
       - GO111MODULE=on
     commands:
