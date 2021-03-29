@@ -10,7 +10,7 @@ pipeline:
   build-base-image-tagged:
     when:
       event: tag
-      branch: master
+      branch: mainline
     image: plugins/docker
     repo: registry.usw.co/cloud/amazon-ssm-agent-base
     tags:
@@ -27,7 +27,7 @@ pipeline:
   publish-tagged:
     when:
       event: tag
-      branch: master
+      branch: mainline
     image: plugins/s3
     acl: public-read
     region: "eu-west-1"
