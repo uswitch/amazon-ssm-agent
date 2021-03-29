@@ -1,0 +1,37 @@
+pipeline:
+  build-base-image:
+    when:
+      event: [push, tag]
+    image: plugins/docker
+    repo: registry.usw.co/cloud/amazon-ssm-agent-base
+    tags:
+      - ${DRONE_COMMIT_SHA}
+      - latest
+  build-base-image-tagged:
+    when:
+      event: tag
+      branch: master
+    image: plugins/docker
+    repo: registry.usw.co/cloud/amazon-ssm-agent-base
+    tags:
+      - ${DRONE_TAG}
+      - latest
+  build:
+    when:
+      event: [push, tag]
+    image: registry.usw.co/cloud/amazon-ssm-agent-base
+    commands:
+      - TAG=$(echo ${DRONE_TAG} | sed 's/v//')
+      - git checkout ${TAG}
+      - make build-linux
+  publish-tagged:
+    when:
+      event: tag
+      branch: master
+    image: plugins/s3
+    acl: public-read
+    region: "eu-west-1"
+    bucket: "uswitch-tools"
+    strip_prefix: bin/
+    source: bin/*
+    target: amazon-ssm-agent/${DRONE_TAG}
