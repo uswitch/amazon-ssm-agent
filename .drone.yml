@@ -21,17 +21,14 @@ pipeline:
       event: [push, tag]
     image: registry.usw.co/cloud/amazon-ssm-agent-base
     commands:
-      - TAG=$(echo ${DRONE_TAG} | sed 's/v//')
-      - git checkout ${TAG}
       - make build-linux
   publish-tagged:
     when:
       event: tag
-      branch: mainline
     image: plugins/s3
     acl: public-read
     region: "eu-west-1"
     bucket: "uswitch-tools"
     strip_prefix: bin/
-    source: bin/*
+    source: bin/**/*
     target: amazon-ssm-agent/${DRONE_TAG}
