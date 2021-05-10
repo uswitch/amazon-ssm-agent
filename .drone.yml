@@ -22,7 +22,8 @@ pipeline:
     image: registry.usw.co/cloud/amazon-ssm-agent-base
     commands:
       - make build-linux
-  publish-tagged:
+      - echo "${DRONE_TAG}" > latest.txt
+  publish-versioned:
     when:
       event: tag
     image: plugins/s3
@@ -32,3 +33,22 @@ pipeline:
     strip_prefix: bin/
     source: bin/**/*
     target: amazon-ssm-agent/${DRONE_TAG}
+  publish-latest:
+    when:
+      event: tag
+    image: plugins/s3
+    acl: public-read
+    region: "eu-west-1"
+    bucket: "uswitch-tools"
+    strip_prefix: bin/
+    source: bin/**/*
+    target: amazon-ssm-agent/latest
+  publish-latest-txt:
+    when:
+      event: tag
+    image: plugins/s3
+    acl: public-read
+    region: "eu-west-1"
+    bucket: "uswitch-tools"
+    source: latest.txt
+    target: amazon-ssm-agent/
